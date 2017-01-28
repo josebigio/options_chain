@@ -6,7 +6,7 @@ var StockSchema   = new Schema({
                         Name: String
                     },
                     {
-                        collection:'stocks_info'
+                        collection:'stock_names'
                     });
 
 module.exports = mongoose.model('Stock', StockSchema);

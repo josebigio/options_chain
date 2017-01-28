@@ -101,10 +101,13 @@ app.listen(port);
 console.log('Magic happens on port ' + port);
 
 
-
-//databse setup
 var mongoose   = require('mongoose');
-var db = mongoose.connect('mongodb://localhost/stock_names');
-console.log("db: " + db);
-// mongoose.connect('mongodb://node:node@novus.modulusmongo.net:27017/Iganiq8o'); // connect to our database
+mongoose.connect('mongodb://jose_bigio:josebigio12345@ds031845.mlab.com:31845/heroku_bt3gw0lq', function (err,db) {
+    if(err) {
+        console.log('error connecting to db: ' + err);
+    }
+    else {
+        console.log('connected to db: ' + db);
+    }
+});
 var Stock = require('./app/models/stock');
