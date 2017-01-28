@@ -29,6 +29,11 @@ router.use(function(req, res, next) {
 
 
 
+router.get('/',function (req,res) {
+   res.json({message:"Welcome to our api",
+            endpoints:["option_chains?stock_name=[stock name]","look_up?name=[company name]"]});
+});
+
 // test route to make sure everything is working (accessed at GET http://localhost:8080/api)
 router.route('/option_chains').get(function(req, res) {
 
@@ -43,9 +48,8 @@ router.route('/option_chains').get(function(req, res) {
     console.log(financeApiString);
 	request(financeApiString, function (error, response, body) {
 			  if (!error && response.statusCode == 200) {
-                  var fixedJSONBody  = body.replace(/(['"])?([a-z0-9A-Z_]+)(['"])?:/g, '"$2": ');
-                  var jsonResult = JSON.parse(fixedJSONBody);
-			    console.log(fixedJSONBody) // Show the HTML for the Google homepage.
+                    var fixedJSONBody  = body.replace(/(['"])?([a-z0-9A-Z_]+)(['"])?:/g, '"$2": ');
+                    var jsonResult = JSON.parse(fixedJSONBody);
     			res.json(
     				{
     					data: jsonResult
@@ -59,6 +63,30 @@ router.route('/option_chains').get(function(req, res) {
 		});
 
 
+});
+
+router.route('/look_up').get(function (req,res) {
+    var name = req.param('name');
+    if(!name) {
+        res.status(422).send('Missing name parameter. Example ?name=Apple');
+        return;
+    }
+    Stock.find({'Name':{$regex : new RegExp(name,'i')}},function(err,stocks) {
+        var result = [];
+        if(err) {
+            console.log('error getting stocks: ' + err);
+        }
+        else {
+            console.log(JSON.stringify(stocks));
+            for(var i in stocks) {
+                result.push({
+                    companyName: stocks[i].Name,
+                    stockName: stocks[i].Symbol
+                });
+            }
+        }
+        res.json({matches:result});
+    });
 });
 
 // more routes for our API will happen here
@@ -76,5 +104,7 @@ console.log('Magic happens on port ' + port);
 
 //databse setup
 var mongoose   = require('mongoose');
-mongoose.connect('mongodb://node:node@novus.modulusmongo.net:27017/Iganiq8o'); // connect to our database
-var Bear = require('./app/models/bear');
+var db = mongoose.connect('mongodb://localhost/stock_names');
+console.log("db: " + db);
+// mongoose.connect('mongodb://node:node@novus.modulusmongo.net:27017/Iganiq8o'); // connect to our database
+var Stock = require('./app/models/stock');
