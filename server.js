@@ -71,13 +71,14 @@ router.route('/look_up').get(function (req,res) {
         res.status(422).send('Missing name parameter. Example ?name=Apple');
         return;
     }
-    Stock.find({'Name':{$regex : new RegExp(name,'i')}},function(err,stocks) {
+    Stock.find({$or:[{'Name':{$regex : new RegExp(name,'i')}},{'Symbol':{$regex : new RegExp(name,'i')}}]},function(err,stocks) {
         var result = [];
         if(err) {
             console.log('error getting stocks: ' + err);
         }
         else {
-            console.log(JSON.stringify(stocks));
+            //console.log(JSON.stringify(stocks));
+            console.log("size: " + stocks.length);
             for(var i in stocks) {
                 result.push({
                     companyName: stocks[i].Name,
@@ -86,7 +87,7 @@ router.route('/look_up').get(function (req,res) {
             }
         }
         res.json({matches:result});
-    });
+    }).limit(10);
 });
 
 // more routes for our API will happen here
@@ -102,6 +103,7 @@ console.log('Magic happens on port ' + port);
 
 
 var mongoose   = require('mongoose');
+// mongoose.connect('mongodb://localhost/stock_names', function (err,db) {
 mongoose.connect('mongodb://jose_bigio:josebigio12345@ds031845.mlab.com:31845/heroku_bt3gw0lq', function (err,db) {
     if(err) {
         console.log('error connecting to db: ' + err);
