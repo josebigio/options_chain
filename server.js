@@ -86,7 +86,7 @@ router.route('/look_up').get(function (req,res) {
                 });
             }
         }
-        res.json({matches:result});
+        res.json({data:result});
     }).limit(10);
 });
 
