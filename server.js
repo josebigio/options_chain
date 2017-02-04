@@ -52,7 +52,7 @@ router.route('/option_chains').get(function(req, res) {
                     var jsonResult = JSON.parse(fixedJSONBody);
     			res.json(
     				{
-    					data: {options_info:jsonResult}
+    					data: jsonResult
     				}
     			);
 
